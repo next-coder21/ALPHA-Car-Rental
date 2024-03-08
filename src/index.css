@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #ffff;
+}
+
+.dark body {
+  background-color: #022c22;
+}
+
+.dfc {
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  object-position: 80% 0;
+  border-radius: 50%;
+}
+.dfc1 {
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  object-position: 70% 80%;
+  border-radius: 50%;
+}
+
+.deals {
+  height: 100px;
+  background-image: url("./assets/Images/Hero/cartravel1.jpg");
+  background-size: cover;
+}
+.deals .sd {
+  display: none;
+}
+
+.deals:hover {
+  height: 160px;
+  background-image: url("./assets/Images/Hero/cartravel1.jpg");
+  background-size: cover;
+}
+
+.deals:hover .sd {
+  display: block;
+}
+
+.deals1 {
+  height: 100px;
+  background-image: url("./assets/Images/Hero/cartravel2.jpg");
+  background-size: cover;
+}
+.deals1 .sd {
+  display: none;
+}
+
+.deals1:hover {
+  height: 160px;
+  background-image: url("./assets/Images/Hero/cartravel2.jpg");
+  background-size: cover;
+}
+
+.deals1:hover .sd {
+  display: block;
+}
+
+.deals2 {
+  height: 100px;
+  background-image: url("./assets/Images/Hero/cartravel3.jpg");
+  background-size: cover;
+}
+.deals2 .sd {
+  display: none;
+}
+
+.deals2:hover {
+  height: 160px;
+  background-image: url("./assets/Images/Hero/cartravel3.jpg");
+  background-size: cover;
+}
+
+.deals2:hover .sd {
+  display: block;
+}
+
+.deals3 {
+  width: 100%;
+  height: auto;
+  background-image: url("./assets/Images/Hero/cartravel3.jpg");
+  background-size: cover;
+}
+.deals3 .sd {
+  display: none;
+}
+
+.de1 {
+  height: 85px;
+  width: 85px;
+}
+
+
+.bck{
+  background-image: url('https://ucarecdn.com/64fee3a3-cac5-43f9-8f1b-558117489100/izdz.jpg');
+  background-size: cover;
+}

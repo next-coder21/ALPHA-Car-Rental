@@ -1,0 +1,17 @@
+.mod{
+    height: 15px;
+    width:15px;
+    background-color: blueviolet;
+    border:  2px solid yellow;
+}
+
+
+/* @media only screen and (max-width: 480px) {
+    .lgo {
+      display: none;
+    }
+  }
+
+.lgo{
+    display: block;
+} */
