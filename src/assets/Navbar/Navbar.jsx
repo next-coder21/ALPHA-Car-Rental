@@ -18,6 +18,8 @@ function Navbar() {
   };
   const [enabled, setEnabled] = useState(false);
 
+  
+
   const [signup, setSignup] = useState(false);
   const hadleSignup = () => {
     setSignup(!signup);
@@ -42,32 +44,14 @@ function Navbar() {
             </div>
             <div>
               <h3 className="text-2xl pt-3 pl-3 font-extrabold sm:visible invisible">
-                <span className="text-red-700 ">ALPHA</span> Cars
+                <span className="text-red-700 dark:text-blue-500" onClick={handleToggle}>ALPHA</span> Cars
               </h3>
             </div>
           </div>
-          <div className="flex gap-5 font-semibold my-auto">
+          <div className="flex gap-5 font-semibold pt-4 py-4">
             {loggedin ? (
               <div>
-              <div>
-              <ul className="gap-8 pt-5 font-bold md:inline-flex hidden">
-                <li>
-                  <a href="#">Faq</a>
-                </li>
-                <li>
-                  <a href="#">About Us</a>
-                </li>
-                <li>
-                  <a href="#">Book</a>
-                </li>
-                <li>
-                  <a href="#">Profile</a>
-                </li>
-              </ul>
-              </div>
-              <div className="text-end pt-3 text-lg font-semibold">
-              
-    </div>
+      
               </div>
               
             ) : null}
@@ -75,7 +59,7 @@ function Navbar() {
             <Fragment>
               {!loggedin ? (
                 <Link
-                  className="rounded-lg bg-indigo-600 text-white px-3 text-middle font-semibold text-md leading-tight shadow-md hover:bg-indigo-700"
+                  className="rounded-lg bg-indigo-600 text-white px-3 text-middle font-semibold text-md leading-tight shadow-md hover:bg-indigo-700 pt-2"
                   onClick={() => setOpen(true)}
                 >
                   Login
@@ -85,7 +69,7 @@ function Navbar() {
                 <div>
                   <Menu as="div" className="relative inline-block text-left">
                     <div>
-                      <Menu.Button className="inline-flex w-full justify-center rounded-md  px-4 py-2 text-sm font-medium text-white hover:bg-black/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75">
+                      <Menu.Button className="inline-flex w-full justify-center rounded-md  px-4 py-2 text-sm font-medium text-white  focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75">
                         <img className="w-10 h-10 p-1 rounded-full ring-2 ring-gray-300 dark:ring-gray-500" src="https://ucarecdn.com/ce49a2d7-2a4e-4c6d-a80f-4b588af8ac6a/DSC_1061.JPG" alt="Bordered avatar"/>
                         
                       </Menu.Button>

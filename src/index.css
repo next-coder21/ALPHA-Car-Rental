@@ -102,3 +102,10 @@ body {
   background-image: url('https://ucarecdn.com/64fee3a3-cac5-43f9-8f1b-558117489100/izdz.jpg');
   background-size: cover;
 }
+
+
+.roboto-medium {
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+}

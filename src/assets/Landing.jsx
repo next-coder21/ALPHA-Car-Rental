@@ -5,6 +5,7 @@ import Vehicle from './Pages/Our Vehicles/Vehicle'
 import Pricing from './Pages/Pricing/Pricing'
 import Review from './Pages/Review/Review3';
 import Booking from './Pages/Booking/booking'
+import Frequentlyask from './Pages/Faq/frequentlyask'
 
 
 function Landing() {
@@ -20,6 +21,7 @@ function Landing() {
         <Deals />
         <Review />
         <Pricing />
+        <Frequentlyask />
         
     </>
     
