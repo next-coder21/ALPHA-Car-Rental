@@ -6,20 +6,26 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Navbar from './assets/Navbar/Navbar'
 import Login from './assets/Pages/Login'
 import Landing from './assets/Landing'
+import Footer from './assets/Pages/footer/footer'
+import Dashboard from './assets/Admin/Dashboard/dashboard'
 
 function App() {
 
-
+  const [isAdmin, setIsAdmin] = useState(false);
   return (
     <>
      <BrowserRouter>
-      <Navbar  />
+     {isAdmin ? null : <Navbar />}
      
      <Routes>
      
      <Route path="/" element={<Landing />}/>
+     <Route path="/Admin/Dashboard" element={<Dashboard />}/>
       
      </Routes>
+     {isAdmin ? null : (
+        <Footer setIsAdmin={setIsAdmin} />
+      )}
      </BrowserRouter>
     </>
   )

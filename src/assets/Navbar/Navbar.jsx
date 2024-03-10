@@ -10,6 +10,9 @@ import {
   faFacebookF,
 } from "@fortawesome/free-brands-svg-icons";
 import Logo from "../../assets/Alpha.png";
+import { useFormik } from "formik";
+import { SignupformSchema } from "../Pages/schema/SignupformSchema";
+import useSigninService from "../service/signup";
 
 function Navbar() {
   const [loggedin, setLoggedin] = useState(false);
@@ -17,8 +20,6 @@ function Navbar() {
     setLoggedin(!loggedin);
   };
   const [enabled, setEnabled] = useState(false);
-
-  
 
   const [signup, setSignup] = useState(false);
   const hadleSignup = () => {
@@ -29,6 +30,30 @@ function Navbar() {
     document.documentElement.classList.toggle("dark");
     setEnabled(!enabled);
   };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    
+  };
+
+  const {signUp} = useSigninService;
+  const initialSignupValues = {
+    fullName: "",
+    email: "",
+    mobileNumber: "",
+    password: "",
+  };
+
+  const { values, errors, handleChange } = useFormik({
+    initialValues: initialSignupValues,
+    validationSchema: SignupformSchema,
+    onSubmit: (values,action) => {
+      SignupService.signup(values);
+      action.resetForm;
+      console.log(values);
+      
+    },
+  });
 
   const [open, setOpen] = useState(false);
 
@@ -44,17 +69,18 @@ function Navbar() {
             </div>
             <div>
               <h3 className="text-2xl pt-3 pl-3 font-extrabold sm:visible invisible">
-                <span className="text-red-700 dark:text-blue-500" onClick={handleToggle}>ALPHA</span> Cars
+                <span
+                  className="text-red-700 dark:text-blue-500"
+                  onClick={handleToggle}
+                >
+                  ALPHA
+                </span>{" "}
+                Cars
               </h3>
             </div>
           </div>
           <div className="flex gap-5 font-semibold pt-4 py-4">
-            {loggedin ? (
-              <div>
-      
-              </div>
-              
-            ) : null}
+            {loggedin ? <div></div> : null}
 
             <Fragment>
               {!loggedin ? (
@@ -70,8 +96,11 @@ function Navbar() {
                   <Menu as="div" className="relative inline-block text-left">
                     <div>
                       <Menu.Button className="inline-flex w-full justify-center rounded-md  px-4 py-2 text-sm font-medium text-white  focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75">
-                        <img className="w-10 h-10 p-1 rounded-full ring-2 ring-gray-300 dark:ring-gray-500" src="https://ucarecdn.com/ce49a2d7-2a4e-4c6d-a80f-4b588af8ac6a/DSC_1061.JPG" alt="Bordered avatar"/>
-                        
+                        <img
+                          className="w-10 h-10 p-1 rounded-full ring-2 ring-gray-300 dark:ring-gray-500"
+                          src="https://ucarecdn.com/ce49a2d7-2a4e-4c6d-a80f-4b588af8ac6a/DSC_1061.JPG"
+                          alt="Bordered avatar"
+                        />
                       </Menu.Button>
                     </div>
                     <Transition
@@ -192,7 +221,8 @@ function Navbar() {
                                   active
                                     ? "bg-violet-500 text-white"
                                     : "text-gray-900"
-                                } group flex w-full items-center rounded-md px-2 py-2 text-sm`} onClick={handleLogin}
+                                } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                                onClick={handleLogin}
                               >
                                 {active ? (
                                   <DeleteActiveIcon
@@ -213,9 +243,6 @@ function Navbar() {
                       </Menu.Items>
                     </Transition>
                   </Menu>
-                  
-
-                 
                 </div>
               ) : null}
             </Fragment>
@@ -378,8 +405,11 @@ function Navbar() {
                   leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                   leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
+               
                   <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white  shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-96 w-full">
+                  <form id="signUp">
                     <div className="bg-white px-4 pb-4 pt-2 sm:p-2 sm:pb-4">
+                    
                       <div className="mt-3   sm:ml-1 sm:mt-0 sm:text-left">
                         <Dialog.Title
                           as="h3"
@@ -406,30 +436,68 @@ function Navbar() {
                             Use your Credentials
                           </p>
                           <div className="text-start grid gap-0">
-                            <label className="text-gray-700 font-bold  ">
+                            <label  className="text-gray-700 font-bold"  >
                               Name
                             </label>
                             <input
                               className="text-gray-700 shadow border rounded-2xl border-gray-300 focus:outline-none focus:shadow-outline py-1 px-3 "
                               type="text"
                               placeholder="name"
+                              label="fullName"
+                              name="fullName"
+                              id="fullName"
+                              value={values.fullName}
+                              error={errors.fullName}
+                           
+                              onChange={handleChange}
                             />
-                            <label className="text-gray-700 font-bold  ">
+                            <label className="text-gray-700 font-bold">
                               Email
                             </label>
                             <input
                               className="text-gray-700 shadow border rounded-2xl border-gray-300 focus:outline-none focus:shadow-outline py-1 px-3 "
                               type="text"
                               placeholder="email"
+                              label="email"
+                              name="email"
+                              id="email"
+                              value={values.email}
+                              error={errors.email}
+                            
+                              onChange={handleChange}
+                              autoComplete="off" 
                             />
 
-                            <label className="text-gray-700 font-bold pt-2">
+                            <label  className="text-gray-700 font-bold pt-2" >
                               Password
                             </label>
                             <input
                               className="text-gray-700 shadow border rounded-2xl  border-gray-300 focus:outline-none focus:shadow-outline py-1 px-3 mb-3"
                               type="password"
                               placeholder="password"
+                              label="password"
+                              name="password"
+                              id="password"
+                              value={values.password}
+                              error={errors.password}
+                              
+                              onChange={handleChange}
+                              
+                            />
+                            <label  className="text-gray-700 font-bold" >
+                              Phone Number
+                            </label>
+                            <input
+                              className="text-gray-700 shadow border rounded-2xl  border-gray-300 focus:outline-none focus:shadow-outline py-1 px-3 mb-3"
+                              type="number"
+                              placeholder="mobile number"
+                              lable="mobileNumber"
+                              name="mobileNumber"
+                              id="mobileNumber"
+                              value={values.mobileNumber}
+                              error={errors.mobileNumber}
+                            
+                              onChange={handleChange}
                             />
                           </div>
                           <div className=" px-3">
@@ -450,9 +518,9 @@ function Navbar() {
 
                     <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                       <button
-                        type="button"
+                        type="submit"
                         className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                        onClick={() => setOpen(false) & handleLogin(true)}
+                        onSubmit={handleSubmit}
                       >
                         Sign up
                       </button>
@@ -464,8 +532,11 @@ function Navbar() {
                       >
                         Cancel
                       </button>
+                      
                     </div>
+                    </form>
                   </Dialog.Panel>
+                  
                 </Transition.Child>
               </div>
             </div>
