@@ -1,1 +1,18 @@
-
+@media print {
+    /* Hide elements not needed in the print version */
+    header, footer, .navbar, .footer {
+      display: none;
+    }
+    
+    /* Ensure the container to be printed is visible and formatted */
+    .print-container {
+      display: block;
+      width: 100%;
+    }
+  
+    /* Optional: Add margin for the print view */
+    @page {
+      margin: 1in;
+    }
+  }
+  

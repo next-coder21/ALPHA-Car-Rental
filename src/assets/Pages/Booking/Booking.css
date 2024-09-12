@@ -1,0 +1,26 @@
+.booking-image{
+    background-image: url(../../booking-bg.jpg);
+    background-size: cover; 
+    background-position: center;
+    background-repeat: no-repeat;
+
+}
+
+.booking-form{
+   
+        backdrop-filter: blur(15px) saturate(180%);
+        -webkit-backdrop-filter: blur(15px) saturate(180%);
+        background-color: rgba(17, 25, 40, 0.55);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.125);
+    
+}
+
+.input-text-col{
+    color: black;
+}
+
+/* .booking-image{
+    background-color: rgb(44, 195, 21);
+  
+} */ 

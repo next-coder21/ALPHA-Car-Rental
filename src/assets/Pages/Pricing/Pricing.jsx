@@ -1,6 +1,29 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+
+import axios from 'axios';
 
 function Pricing() {
+  const url = 'https://booking-com.p.rapidapi.com/v1/car-rental/detail?search_key=eyJkcml2ZXJzQWdlIjozNSwiZHJvcE9mZkRhdGVUaW1lIjoiMjAyMS0xMS0xMlQxMDowMDowMCIsImRyb3BPZmZMb2NhdGlvbiI6IjU1Ljc1MjIwMSwzNy42MTU2MDEiLCJkcm9wT2ZmTG9jYXRpb25UeXBlIjoiTEFUTE9ORyIsInBpY2tVcERhdGVUaW1lIjoiMjAyMS0xMS0wOVQxMDowMDowMCIsInBpY2tVcExvY2F0aW9uIjoiNTUuNzUyMjAxLDM3LjYxNTYwMSIsInBpY2tVcExvY2F0aW9uVHlwZSI6IkxBVExPTkciLCJyZW50YWxEdXJhdGlvbkluRGF5cyI6Mywic2VydmljZUZlYXR1cmVzIjpbIk5PX09QQVFVRVMiLCJTVVBSRVNTX0ZJWEVEX1BSSUNFX1ZFSElDTEVTIl19&locale=en-gb&vehicle_id=699544941&from_country=it&currency=AED';
+  const options = {
+    method: 'GET',
+    headers: {
+      'X-RapidAPI-Key': '7d139b189emsh6187a690e9b07ebp1f584ejsnd909e784bfe7',
+      'X-RapidAPI-Host': 'booking-com.p.rapidapi.com'
+    }
+  };
+  
+const makeRequest = async() =>{
+  try {
+    const response = await fetch(url, options);
+    const result = await response.text();
+    console.log(result);
+  } catch (error) {
+    console.error(error);
+  }
+}
+    
+  
+
   return (
     <>
       <section>
@@ -37,6 +60,7 @@ function Pricing() {
                 <a
                   href="/order"
                   aria-describedby="product1"
+                  id="normal"
                   className="bg-white/10 text-white hover:bg-white/20 focus-visible:outline-white mt-6 block rounded-md py-2 px-3 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                 >
                   Subscribe Now 
@@ -200,8 +224,9 @@ function Pricing() {
                   <span className="text-sm font-semibold leading-6 text-gray-300"></span>
                 </p>
                 <a
-                  href="/order"
+                  
                   aria-describedby="product3"
+                  onClick={makeRequest}
                   className="bg-white/10 text-white hover:bg-white/20 focus-visible:outline-white mt-6 block rounded-md py-2 px-3 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                 >
                   Subscribe Now

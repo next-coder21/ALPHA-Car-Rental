@@ -15,13 +15,11 @@ function Landing() {
   return (
     <>
    <LandingHero />
-    <Booking />
-    
     <Vehicle />
-        <Deals />
-        <Review />
-        <Pricing />
-        <Frequentlyask />
+    <Deals />
+    <Review />
+    <Pricing />
+    <Frequentlyask />
         
     </>
     

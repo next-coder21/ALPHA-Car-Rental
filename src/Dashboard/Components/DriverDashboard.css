@@ -1,0 +1,70 @@
+/* src/components/DriverDashboard.css */
+
+.driver-dashboard {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+  }
+  
+  .dashboard-header input {
+    width: 300px;
+    padding: 5px;
+  }
+  
+  .dashboard-content {
+    display: flex;
+    margin-top: 20px;
+  }
+  
+  .left-panel, .center-panel, .right-panel {
+    flex: 1;
+    margin: 0 10px;
+  }
+  
+  .location-live, .top-songs, .weather, .music-player, .car-details, .station {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  h2 {
+    margin-bottom: 10px;
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  ul li {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .music-player .player-controls {
+    display: flex;
+    align-items: center;
+  }
+  
+  .music-player .player-controls span {
+    margin-left: 10px;
+  }
+  
+  .car-details img {
+    width: 100%;
+    border-radius: 10px;
+  }
+  
+  

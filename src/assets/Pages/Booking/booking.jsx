@@ -1,289 +1,245 @@
-import { React, useState, Fragment } from "react";
-import { Combobox, Transition, Listbox } from "@headlessui/react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useAppContext } from "../../../AppContext";
+import "./Booking.css";
 
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+const cars = {
+  1: {
+    name: "Coupe",
+    basePrice: 500,
+    pricePerKm: 30,
+    hourlyCharge: 70,
+    totalCost: 600,
+  },
+  2: {
+    name: "Sedan",
+    basePrice: 200,
+    pricePerKm: 10,
+    hourlyCharge: 50,
+    totalCost: 260,
+  },
+  3: {
+    name: "SUV",
+    basePrice: 150,
+    pricePerKm: 15,
+    hourlyCharge: 50,
+    totalCost: 215,
+  },
+  4: {
+    name: "Hybrid",
+    basePrice: 250,
+    pricePerKm: 10,
+    hourlyCharge: 50,
+    totalCost: 310,
+  },
+  5: {
+    name: "Electric",
+    basePrice: 300,
+    pricePerKm: 5,
+    hourlyCharge: 50,
+    totalCost: 355,
+  },
+  6: {
+    name: "Microcar",
+    basePrice: 100,
+    pricePerKm: 5,
+    hourlyCharge: 50,
+    totalCost: 155,
+  },
+};
 
-const location = [
-  { id: 1, name: "Koyambedu" },
-  { id: 2, name: "Thirunagar" },
-  { id: 3, name: "Vadapalani" },
-  { id: 4, name: "Ashok Pillar" },
-  { id: 5, name: "Ashok Nagar" },
-  { id: 6, name: "Arumbakkam" },
-  { id: 7, name: "Alandhur" },
-  { id: 8, name: "Tambaram" },
-  { id: 9, name: "EEkatuthangal" },
-];
+const haversineDistance = ([lat1, lon1], [lat2, lon2]) => {
+  const toRad = (x) => (x * Math.PI) / 180;
+  const R = 6371; // Radius of the Earth in km
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+};
 
-const cars = [
-  { name: "Coupe" },
-  { name: "Sedan" },
-  { name: "Suv" },
-  { name: "Hybrid" },
-  { name: "Electric" },
-  { name: "Microcar" },
-];
+const Booking = () => {
+  const { user } = useAppContext();
+  const [selectedCar, setSelectedCar] = useState(cars[1]);
+  const [dateTime, setDateTime] = useState("");
+  const [fromPlace, setFromPlace] = useState("");
+  const [toPlace, setToPlace] = useState("");
+  const [distance, setDistance] = useState(null);
+  const [price, setPrice] = useState(null);
+  const [bookingId, setBookingId] = useState("");
+  const navigate = useNavigate();
 
-function Booking() {
-  const [selected, setSelected] = useState(location[0]);
-  const [selected1, setSelected1] = useState(location[1]);
-  const [selectedcar, setSelectedcar] = useState(cars[0]);
-  const [query, setQuery] = useState("");
-  const [query1, setQuery1] = useState("");
+  const getCoordinates = async (place) => {
+    try {
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(place)}`
+      );
+      const { lat, lon } = response.data[0] || {};
+      if (lat && lon) {
+        return [parseFloat(lat), parseFloat(lon)];
+      }
+      throw new Error("Coordinates not found");
+    } catch (error) {
+      console.error("Error fetching coordinates:", error);
+      return null;
+    }
+  };
 
-  const filteredlocation =
-    query === ""
-      ? location
-      : location.filter((location) =>
-          location.name
-            .toLowerCase()
-            .replace(/\s+/g, "")
-            .includes(query.toLowerCase().replace(/\s+/g, ""))
-        );
-  const filtered1location =
-    query1 === ""
-      ? location
-      : location.filter((location) =>
-          location.name
-            .toLowerCase()
-            .replace(/\s+/g, "")
-            .includes(query1.toLowerCase().replace(/\s+/g, ""))
-        );
+  const handleBookNow = async () => {
+    const currentTime = new Date();
+    const bookingTime = new Date(dateTime);
+  
+    if (!fromPlace || !toPlace) {
+      alert("Please enter both source and destination places.");
+      return;
+    }
+  
+    const fromCoords = await getCoordinates(fromPlace);
+    const toCoords = await getCoordinates(toPlace);
+  
+    if (!fromCoords || !toCoords) {
+      alert("Failed to get coordinates. Please check the place names.");
+      return;
+    }
+  
+    if (fromCoords[0] === toCoords[0] && fromCoords[1] === toCoords[1]) {
+      alert("Source and destination cannot be the same.");
+      return;
+    }
+  
+    if (bookingTime < currentTime) {
+      alert("Booking time cannot be in the past.");
+      return;
+    }
+  
+    const distanceInKm = haversineDistance(fromCoords, toCoords).toFixed(2);
+    const calculatedPrice = (
+      distanceInKm * selectedCar.pricePerKm +
+      selectedCar.basePrice
+    ).toFixed(2);
+  
+    const newBookingId = `BOOK-${Math.floor(Math.random() * 1000000)}`;
+  
+    setDistance(distanceInKm);
+    setPrice(calculatedPrice);
+    setBookingId(newBookingId);
+  
+    try {
+      const response = await axios.post('https://alpha-server-9861.onrender.com/api/bookings', {
+        userID: user?.id || 1, // Use the logged-in user's ID
+        source: fromPlace,
+        destination: toPlace,
+        carType: selectedCar.name,
+        distance: distanceInKm,
+        amount: calculatedPrice,
+        paymentStatus: 'Pending',
+        bookingStatus: 'Confirmed',
+        bookedForTime: dateTime // Include the booking date and time here
+      });
+  
+      if (response.status === 201) {
+        navigate("/payment", {
+          state: {
+            fromPlace,
+            toPlace,
+            dateTime,
+            carType: selectedCar.name,
+            distance: distanceInKm,
+            price: calculatedPrice,
+            bookingId: response.data.bookingid // Use the booking ID returned from the backend
+          }
+        });
+      } else {
+        throw new Error('Failed to create booking');
+      }
+    } catch (error) {
+      console.error("Error creating booking:", error);
+      alert("Failed to create booking. Please try again.");
+    }
+  };
+
   return (
-    <>
-      <section className="bck h-auto w-full py-20 md:py-28">
-        <div className="text-center font-extrabold  text-slate-800 pb-16">
-          <h1 className="text-5xl">Book Your Trip</h1>
-          <p className="font-light text-amber-900">*site is under construction , May contain bugs.</p>
+    <div className="max-h-screen booking-image p-6">
+      <div className="container mx-auto">
+        <div className="text-center font-extrabold text-slate-100 pb-8">
+          <h1 className="text-5xl mb-4">Book Your Trip</h1>
         </div>
-        <div className="mx-auto border-8 p-2 border-amber-950 rounded-3xl h-auto w-2/3 backdrop-blur-lg">
-          <div className="grid lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-2 grid-cols-1  gap-4">
-            <div className="md:pl-2 pl-0 hover:z-10 z-0">
-              <Combobox value={selected} onChange={setSelected}>
-                <div className="relative mt-1">
-                  <div className="relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
-                    <Combobox.Input
-                      className="w-full border-none py-5 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
-                      displayValue={(location) => location.name}
-                      onChange={(event) => setQuery(event.target.value)}
-                    />
-                    <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
-                      <ChevronUpDownIcon
-                        className="h-5 w-5 text-gray-400"
-                        aria-hidden="true"
-                      />
-                    </Combobox.Button>
-                  </div>
-                  <Transition
-                    as={Fragment}
-                    leave="transition ease-in duration-100"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                    afterLeave={() => setQuery("")}
-                  >
-                    <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
-                      {filteredlocation.length === 0 && query !== "" ? (
-                        <div className="relative cursor-default select-none px-4 py-2 text-gray-700">
-                          Nothing found.
-                        </div>
-                      ) : (
-                        filteredlocation.map((location) => (
-                          <Combobox.Option
-                            key={location.id}
-                            className={({ active }) =>
-                              `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                                active
-                                  ? "bg-teal-600 text-white"
-                                  : "text-gray-900"
-                              }`
-                            }
-                            value={location}
-                          >
-                            {({ selected, active }) => (
-                              <>
-                                <span
-                                  className={`block truncate ${
-                                    selected ? "font-medium" : "font-normal"
-                                  }`}
-                                >
-                                  {location.name}
-                                </span>
-                                {selected ? (
-                                  <span
-                                    className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
-                                      active ? "text-white" : "text-teal-600"
-                                    }`}
-                                  >
-                                    <CheckIcon
-                                      className="h-5 w-5"
-                                      aria-hidden="true"
-                                    />
-                                  </span>
-                                ) : null}
-                              </>
-                            )}
-                          </Combobox.Option>
-                        ))
-                      )}
-                    </Combobox.Options>
-                  </Transition>
-                </div>
-              </Combobox>
-            </div>
-
-            <div className="hover:z-10 z-0">
-              <Combobox value={selected1} onChange={setSelected1}>
-                <div className="relative mt-1 ">
-                  <div className="relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
-                    <Combobox.Input
-                      className="w-full border-none py-5 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
-                      displayValue={(location) => location.name}
-                      onChange={(event) => setQuery1(event.target.value)}
-                    />
-                    <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
-                      <ChevronUpDownIcon
-                        className="h-5 w-5 text-gray-400"
-                        aria-hidden="true"
-                      />
-                    </Combobox.Button>
-                  </div>
-                  <Transition
-                    as={Fragment}
-                    leave="transition ease-in duration-100"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                    afterLeave={() => setQuery1("")}
-                  >
-                    <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
-                      {filtered1location.length === 0 && query !== "" ? (
-                        <div className="relative cursor-default select-none px-4 py-2 text-gray-700">
-                          Nothing found.
-                        </div>
-                      ) : (
-                        filtered1location.map((location) => (
-                          <Combobox.Option
-                            key={location.id}
-                            className={({ active }) =>
-                              `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                                active
-                                  ? "bg-teal-600 text-white"
-                                  : "text-gray-900"
-                              }`
-                            }
-                            value={location}
-                          >
-                            {({ selected1, active }) => (
-                              <>
-                                <span
-                                  className={`block truncate ${
-                                    selected1 ? "font-medium" : "font-normal"
-                                  }`}
-                                >
-                                  {location.name}
-                                </span>
-                                {selected1 ? (
-                                  <span
-                                    className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
-                                      active ? "text-white" : "text-teal-600"
-                                    }`}
-                                  >
-                                    <CheckIcon
-                                      className="h-5 w-5"
-                                      aria-hidden="true"
-                                    />
-                                  </span>
-                                ) : null}
-                              </>
-                            )}
-                          </Combobox.Option>
-                        ))
-                      )}
-                    </Combobox.Options>
-                  </Transition>
-                </div>
-              </Combobox>
+        <div className="booking-form shadow-md rounded-3xl p-6 mb-8 text-white">
+          <div className="grid lg:grid-cols-4 md:grid-cols-3 gap-6">
+            <div>
+              <label className="block text-xl font-semibold font-mono mb-2">
+                Source Place
+              </label>
+              <input
+                type="text"
+                placeholder="Enter source place"
+                value={fromPlace}
+                onChange={(e) => setFromPlace(e.target.value)}
+                className="w-full p-4 border border-gray-300 rounded-lg input-text-col"
+              />
             </div>
             <div>
-              <Listbox value={selectedcar} onChange={setSelectedcar}>
-                <div className="relative mt-1">
-                  <Listbox.Button className="relative w-full cursor-default rounded-lg bg-white py-5 pl-3  pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
-                    <span className="block truncate">{selectedcar.name}</span>
-                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                      <ChevronUpDownIcon
-                        className="h-5 w-5 text-gray-400"
-                        aria-hidden="true"
-                      />
-                    </span>
-                  </Listbox.Button>
-                  <Transition
-                    as={Fragment}
-                    leave="transition ease-in duration-100"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                  >
-                    <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
-                      {cars.map((cars, carsIdx) => (
-                        <Listbox.Option
-                          key={carsIdx}
-                          className={({ active }) =>
-                            `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                              active
-                                ? "bg-amber-100 text-amber-900"
-                                : "text-gray-900"
-                            }`
-                          }
-                          value={cars}
-                        >
-                          {({ selectedcar }) => (
-                            <>
-                              <span
-                                className={`block truncate ${
-                                  selectedcar ? "font-medium" : "font-normal"
-                                }`}
-                              >
-                                {cars.name}
-                              </span>
-                              {selectedcar ? (
-                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
-                                  <CheckIcon
-                                    className="h-5 w-5"
-                                    aria-hidden="true"
-                                  />
-                                </span>
-                              ) : null}
-                            </>
-                          )}
-                        </Listbox.Option>
-                      ))}
-                    </Listbox.Options>
-                  </Transition>
-                </div>
-              </Listbox>
+              <label className="block text-xl font-semibold font-mono mb-2">
+                Destination Place
+              </label>
+              <input
+                type="text"
+                placeholder="Enter destination place"
+                value={toPlace}
+                onChange={(e) => setToPlace(e.target.value)}
+                className="w-full p-4 border border-gray-300 rounded-lg input-text-col"
+              />
             </div>
             <div>
-              <div className="flex align-middle align-content-center pt-1">
-                <input
-                  x-ref="datetime"
-                  type="datetime-local"
-                  id="datetime"
-                  data-input
-                  placeholder="Date & Time"
-                  className="block w-full px-2 pt-5 pb-5 md:pt-5 md:pb-4   border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
-                />
-              </div>
+              <label className="block text-xl font-semibold font-mono mb-2">
+                Vehicle Category
+              </label>
+              <select
+                value={Object.keys(cars).find(key => cars[key].name === selectedCar.name)}
+                onChange={(e) => setSelectedCar(cars[e.target.value])}
+                className="w-full p-4 border border-gray-300 rounded-lg input-text-col"
+              >
+                {Object.entries(cars).map(([key, car]) => (
+                  <option key={key} value={key}>
+                    {car.name}
+                  </option>
+                ))}
+              </select>
             </div>
-            <div className="py-1 mx-auto">
-              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-4  px-10 border border-blue-700 rounded">
+            <div>
+              <label className="block text-xl font-semibold font-mono mb-2">
+                Date and Time
+              </label>
+              <input
+                type="datetime-local"
+                value={dateTime}
+                onChange={(e) => setDateTime(e.target.value)}
+                className="w-full p-4 border border-gray-300 rounded-lg input-text-col"
+              />
+            </div>
+            <div className="flex items-end">
+              <button
+                onClick={handleBookNow}
+                className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-4 rounded-lg"
+              >
                 Book Now
               </button>
             </div>
           </div>
+          {distance && price && (
+            <div className="text-center mt-6">
+              <p className="text-lg">Distance: {distance} km</p>
+              <p className="text-lg">Price: ₹{price}</p>
+            </div>
+          )}
         </div>
-      </section>
-    </>
+      </div>
+    </div>
   );
-}
+};
 
 export default Booking;
